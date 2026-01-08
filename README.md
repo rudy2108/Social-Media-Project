@@ -9,6 +9,8 @@ This is a high-end social media platform built with NestJS, Prisma, Next.js, and
 - ✅ Role-based access control (Admin/User)
 - ✅ User CRUD operations with YUP validation
 - ✅ Post management with date filtering
+- ✅ **Photo Uploads** for posts (Multer + Static serving)
+- ✅ **Social Interactions**: Like and Comment on posts
 - ✅ RESTful API with CORS enabled
 
 ### Frontend (Next.js + Redux)
@@ -16,7 +18,10 @@ This is a high-end social media platform built with NestJS, Prisma, Next.js, and
 - ✅ Redux Toolkit for state management
 - ✅ Axios API integration with interceptors
 - ✅ Admin dashboard with user/post management
-- ✅ User dashboard with profile and post features
+- ✅ User dashboard with:
+    - **Personalized Feed**: Recent posts from all users
+    - **Navigation**: Dedicated "Posts", "Create Post", and "Profile" sections
+    - **Social Features**: Like buttons and Comment sections on posts
 - ✅ Responsive design with modern animations
 
 ## Quick Start
@@ -73,10 +78,16 @@ Frontend will run on `http://localhost:3001`
 - `DELETE /api/users/:id` - Delete user (Admin only)
 
 ### Posts (Protected)
-- `POST /api/posts` - Create new post
+- `POST /api/posts` - Create new post (supports file upload)
 - `GET /api/posts/my-posts` - Get user's own posts
 - `GET /api/posts?startDate=&endDate=` - Get all posts with date filter (Admin only)
 - `DELETE /api/posts/:id` - Delete post
+
+### Social (Protected)
+- `POST /api/likes` - Like a post
+- `DELETE /api/likes/:id` - Unlike a post
+- `POST /api/comments` - Add a comment
+- `DELETE /api/comments/:id` - Delete a comment
 
 ## Project Structure
 
@@ -85,7 +96,9 @@ backend/
 ├── src/
 │   ├── auth/          # Authentication module with JWT
 │   ├── users/         # User management
-│   ├── posts/         # Post management
+│   ├── posts/         # Post management (incl. uploads)
+│   ├── likes/         # Like management
+│   ├── comments/      # Comment management
 │   ├── prisma/        # Database service
 │   └── main.ts        # App entry point
 └── prisma/
@@ -95,7 +108,7 @@ frontend/
 ├── src/
 │   ├── app/          # Next.js pages
 │   │   ├── login/           # Login page
-│   │   ├── dashboard/       # User dashboard
+│   │   ├── dashboard/       # User dashboard (Feed, Create, Profile)
 │   │   └── admin/dashboard/ # Admin dashboard
 │   ├── store/               # Redux store
 │   └── services/            # API service
