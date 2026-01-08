@@ -7,9 +7,10 @@ import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
 import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, PostsModule, LikesModule, CommentsModule],
+  imports: [PrismaModule, AuthModule, UsersModule, PostsModule, LikesModule, CommentsModule, FriendsModule],
   controllers: [AppController],
   providers: [AppService],
 })

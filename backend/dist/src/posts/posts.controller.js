@@ -34,6 +34,9 @@ let PostsController = class PostsController {
     findMyPosts(req) {
         return this.postsService.findUserPosts(req.user.userId);
     }
+    findFriendsPosts(req) {
+        return this.postsService.getFriendsPosts(req.user.userId);
+    }
     findOne(id) {
         return this.postsService.findOne(+id);
     }
@@ -73,6 +76,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "findMyPosts", null);
+__decorate([
+    (0, common_1.Get)('friends-posts'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.UserGuard),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PostsController.prototype, "findFriendsPosts", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.UserGuard),

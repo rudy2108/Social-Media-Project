@@ -29,6 +29,12 @@ export class PostsController {
         return this.postsService.findUserPosts(req.user.userId);
     }
 
+    @Get('friends-posts')
+    @UseGuards(AuthGuard('jwt'), UserGuard)
+    findFriendsPosts(@Request() req) {
+        return this.postsService.getFriendsPosts(req.user.userId);
+    }
+
     @Get(':id')
     @UseGuards(AuthGuard('jwt'), UserGuard)
     findOne(@Param('id') id: string) {

@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto, UpdatePostDto, createPostSchema } from './dto/post.dto';
+import { FriendsService } from '../friends/friends.service';
 
 @Injectable()
 export class PostsService {
-    constructor(private prisma: PrismaService) { }
+    constructor(
+        private prisma: PrismaService,
+        @Inject(forwardRef(() => FriendsService))
+        private friendsService: FriendsService,
+    ) { }
 
     async create(userId: number, createPostDto: CreatePostDto, file?: Express.Multer.File) {
         // Validate with YUP
@@ -73,6 +78,36 @@ export class PostsService {
     async findUserPosts(userId: number) {
         const posts = await this.prisma.post.findMany({
             where: { userId },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        return posts;
+    }
+
+    async getFriendsPosts(userId: number) {
+        // Get friend IDs
+        const friendIds = await this.friendsService.getFriendIds(userId);
+
+        // Also include user's own posts
+        const userIdsToInclude = [...friendIds, userId];
+
+        const posts = await this.prisma.post.findMany({
+            where: {
+                userId: {
+                    in: userIdsToInclude,
+                },
+            },
             include: {
                 user: {
                     select: {

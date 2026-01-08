@@ -16,18 +16,29 @@ enum Role {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  password  String
-  name      String?
-  address   String?
-  age       Int?
-  role      Role      @default(USER)
-  posts     Post[]
-  likes     Like[]
-  comments  Comment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id                    Int             @id @default(autoincrement())
+  email                 String          @unique
+  password              String
+  name                  String?
+  address               String?
+  age                   Int?
+  role                  Role            @default(USER)
+  posts                 Post[]
+  likes                 Like[]
+  comments              Comment[]
+  
+  // Friend requests sent by this user
+  sentRequests          FriendRequest[] @relation("SentRequests")
+  // Friend requests received by this user
+  receivedRequests      FriendRequest[] @relation("ReceivedRequests")
+  
+  // Friendships where this user is user1
+  friendshipsAsUser1    Friendship[]    @relation("User1Friendships")
+  // Friendships where this user is user2
+  friendshipsAsUser2    Friendship[]    @relation("User2Friendships")
+  
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
 }
 
 model Post {
@@ -63,4 +74,34 @@ model Comment {
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model FriendRequest {
+  id         Int                 @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  status     FriendRequestStatus @default(PENDING)
+  sender     User                @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User                @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  @@unique([senderId, receiverId])
+}
+
+model Friendship {
+  id        Int      @id @default(autoincrement())
+  user1Id   Int
+  user2Id   Int
+  user1     User     @relation("User1Friendships", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2     User     @relation("User2Friendships", fields: [user2Id], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([user1Id, user2Id])
 }

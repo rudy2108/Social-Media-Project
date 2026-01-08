@@ -48,6 +48,21 @@ export declare class PostsController {
         createdAt: Date;
         updatedAt: Date;
     })[]>;
+    findFriendsPosts(req: any): Promise<({
+        user: {
+            id: number;
+            email: string;
+            name: string | null;
+        };
+    } & {
+        id: number;
+        title: string;
+        description: string;
+        imageUrl: string | null;
+        userId: number;
+        createdAt: Date;
+        updatedAt: Date;
+    })[]>;
     findOne(id: string): Promise<{
         user: {
             id: number;

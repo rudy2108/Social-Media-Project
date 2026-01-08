@@ -8,15 +8,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const post_dto_1 = require("./dto/post.dto");
+const friends_service_1 = require("../friends/friends.service");
 let PostsService = class PostsService {
     prisma;
-    constructor(prisma) {
+    friendsService;
+    constructor(prisma, friendsService) {
         this.prisma = prisma;
+        this.friendsService = friendsService;
     }
     async create(userId, createPostDto, file) {
         try {
@@ -91,6 +97,30 @@ let PostsService = class PostsService {
         });
         return posts;
     }
+    async getFriendsPosts(userId) {
+        const friendIds = await this.friendsService.getFriendIds(userId);
+        const userIdsToInclude = [...friendIds, userId];
+        const posts = await this.prisma.post.findMany({
+            where: {
+                userId: {
+                    in: userIdsToInclude,
+                },
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+        return posts;
+    }
     async findOne(id) {
         const post = await this.prisma.post.findUnique({
             where: { id },
@@ -143,6 +173,8 @@ let PostsService = class PostsService {
 exports.PostsService = PostsService;
 exports.PostsService = PostsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => friends_service_1.FriendsService))),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        friends_service_1.FriendsService])
 ], PostsService);
 //# sourceMappingURL=posts.service.js.map

@@ -16,12 +16,13 @@ const users_module_1 = require("./users/users.module");
 const posts_module_1 = require("./posts/posts.module");
 const likes_module_1 = require("./likes/likes.module");
 const comments_module_1 = require("./comments/comments.module");
+const friends_module_1 = require("./friends/friends.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule, users_module_1.UsersModule, posts_module_1.PostsModule, likes_module_1.LikesModule, comments_module_1.CommentsModule],
+        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule, users_module_1.UsersModule, posts_module_1.PostsModule, likes_module_1.LikesModule, comments_module_1.CommentsModule, friends_module_1.FriendsModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

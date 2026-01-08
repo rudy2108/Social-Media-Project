@@ -11,14 +11,16 @@ const common_1 = require("@nestjs/common");
 const posts_service_1 = require("./posts.service");
 const posts_controller_1 = require("./posts.controller");
 const prisma_module_1 = require("../prisma/prisma.module");
+const friends_module_1 = require("../friends/friends.module");
 let PostsModule = class PostsModule {
 };
 exports.PostsModule = PostsModule;
 exports.PostsModule = PostsModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, (0, common_1.forwardRef)(() => friends_module_1.FriendsModule)],
         controllers: [posts_controller_1.PostsController],
         providers: [posts_service_1.PostsService],
+        exports: [posts_service_1.PostsService],
     })
 ], PostsModule);
 //# sourceMappingURL=posts.module.js.map

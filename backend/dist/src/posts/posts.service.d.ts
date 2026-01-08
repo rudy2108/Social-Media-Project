@@ -1,8 +1,10 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto, UpdatePostDto } from './dto/post.dto';
+import { FriendsService } from '../friends/friends.service';
 export declare class PostsService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private friendsService;
+    constructor(prisma: PrismaService, friendsService: FriendsService);
     create(userId: number, createPostDto: CreatePostDto, file?: Express.Multer.File): Promise<{
         user: {
             id: number;
@@ -34,6 +36,21 @@ export declare class PostsService {
         updatedAt: Date;
     })[]>;
     findUserPosts(userId: number): Promise<({
+        user: {
+            id: number;
+            email: string;
+            name: string | null;
+        };
+    } & {
+        id: number;
+        title: string;
+        description: string;
+        imageUrl: string | null;
+        userId: number;
+        createdAt: Date;
+        updatedAt: Date;
+    })[]>;
+    getFriendsPosts(userId: number): Promise<({
         user: {
             id: number;
             email: string;
