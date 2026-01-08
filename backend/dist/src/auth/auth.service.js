@@ -72,6 +72,36 @@ let AuthService = class AuthService {
         const { password: _, ...result } = user;
         return result;
     }
+    async register(registerDto) {
+        const existingUser = await this.prisma.user.findUnique({
+            where: { email: registerDto.email },
+        });
+        if (existingUser) {
+            throw new common_1.BadRequestException('User with this email already exists');
+        }
+        const hashedPassword = await this.hashPassword(registerDto.password);
+        const user = await this.prisma.user.create({
+            data: {
+                email: registerDto.email,
+                password: hashedPassword,
+                name: registerDto.name,
+                address: registerDto.address,
+                age: registerDto.age,
+                role: 'USER',
+            },
+        });
+        const payload = { email: user.email, sub: user.id, role: user.role };
+        const { password: _, ...userWithoutPassword } = user;
+        return {
+            access_token: this.jwtService.sign(payload),
+            user: {
+                id: userWithoutPassword.id,
+                email: userWithoutPassword.email,
+                name: userWithoutPassword.name,
+                role: userWithoutPassword.role,
+            },
+        };
+    }
     async login(loginDto) {
         const user = await this.validateUser(loginDto.email, loginDto.password);
         const payload = { email: user.email, sub: user.id, role: user.role };
