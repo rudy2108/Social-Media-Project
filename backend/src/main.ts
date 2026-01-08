@@ -9,7 +9,7 @@ async function bootstrap() {
 
   // Enable CORS for frontend (before any routes)
   app.enableCors({
-    origin: 'http://localhost:3001', // Frontend URL
+    origin: 'http://192.168.29.87:3001', // Frontend URL with network IP
     credentials: true,
   });
 
@@ -21,6 +21,7 @@ async function bootstrap() {
   // Add global prefix AFTER static file serving
   app.setGlobalPrefix('api');
 
-  await app.listen(process.env.PORT ?? 3000);
+  // Listen on all network interfaces (0.0.0.0) to allow mobile access
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 bootstrap();

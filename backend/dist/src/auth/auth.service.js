@@ -61,14 +61,19 @@ let AuthService = class AuthService {
         return bcrypt.compare(password, hash);
     }
     async validateUser(email, password) {
+        console.log(`🔐 Login attempt for email: "${email}"`);
         const user = await this.prisma.user.findUnique({ where: { email } });
         if (!user) {
+            console.log(`❌ User not found: ${email}`);
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
+        console.log(`✅ User found: ${user.email} (ID: ${user.id}, Role: ${user.role}, Status: ${user.status})`);
         const isPasswordValid = await this.comparePasswords(password, user.password);
         if (!isPasswordValid) {
+            console.log(`❌ Password validation failed for user: ${email}`);
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
+        console.log(`✅ Password validation successful for user: ${email}`);
         const { password: _, ...result } = user;
         return result;
     }
