@@ -15,6 +15,12 @@ enum Role {
   USER
 }
 
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
 model User {
   id                    Int             @id @default(autoincrement())
   email                 String          @unique
@@ -23,6 +29,8 @@ model User {
   address               String?
   age                   Int?
   role                  Role            @default(USER)
+  status                UserStatus      @default(ACTIVE)
+  lastLoginAt           DateTime?
   posts                 Post[]
   likes                 Like[]
   comments              Comment[]

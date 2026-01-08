@@ -44,8 +44,10 @@ let UsersService = class UsersService {
         const { password, ...result } = user;
         return result;
     }
-    async findAll() {
+    async findAll(status) {
+        const where = status ? { status } : {};
         const users = await this.prisma.user.findMany({
+            where,
             select: {
                 id: true,
                 email: true,
@@ -53,6 +55,8 @@ let UsersService = class UsersService {
                 address: true,
                 age: true,
                 role: true,
+                status: true,
+                lastLoginAt: true,
                 createdAt: true,
                 updatedAt: true,
             },
@@ -108,6 +112,32 @@ let UsersService = class UsersService {
             where: { id },
         });
         return { message: `User with ID ${id} has been deleted` };
+    }
+    async updateStatus(id, status) {
+        await this.findOne(id);
+        const user = await this.prisma.user.update({
+            where: { id },
+            data: { status },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                role: true,
+                status: true,
+            },
+        });
+        return user;
+    }
+    async getActiveUsersCount() {
+        const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const count = await this.prisma.user.count({
+            where: {
+                lastLoginAt: {
+                    gte: twentyFourHoursAgo,
+                },
+            },
+        });
+        return count;
     }
 };
 exports.UsersService = UsersService;

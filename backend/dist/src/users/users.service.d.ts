@@ -12,16 +12,20 @@ export declare class UsersService {
         address: string | null;
         age: number | null;
         role: import(".prisma/client").$Enums.Role;
+        status: import(".prisma/client").$Enums.UserStatus;
+        lastLoginAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
-    findAll(): Promise<{
+    findAll(status?: 'ACTIVE' | 'SUSPENDED' | 'BANNED'): Promise<{
         id: number;
         email: string;
         name: string | null;
         address: string | null;
         age: number | null;
         role: import(".prisma/client").$Enums.Role;
+        status: import(".prisma/client").$Enums.UserStatus;
+        lastLoginAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
     }[]>;
@@ -48,4 +52,12 @@ export declare class UsersService {
     remove(id: number): Promise<{
         message: string;
     }>;
+    updateStatus(id: number, status: 'ACTIVE' | 'SUSPENDED' | 'BANNED'): Promise<{
+        id: number;
+        email: string;
+        name: string | null;
+        role: import(".prisma/client").$Enums.Role;
+        status: import(".prisma/client").$Enums.UserStatus;
+    }>;
+    getActiveUsersCount(): Promise<number>;
 }

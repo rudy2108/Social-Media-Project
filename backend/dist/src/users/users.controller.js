@@ -26,8 +26,8 @@ let UsersController = class UsersController {
     create(createUserDto) {
         return this.usersService.create(createUserDto);
     }
-    findAll() {
-        return this.usersService.findAll();
+    findAll(status) {
+        return this.usersService.findAll(status);
     }
     getProfile(req) {
         return this.usersService.findOne(req.user.userId);
@@ -44,6 +44,12 @@ let UsersController = class UsersController {
     remove(id) {
         return this.usersService.remove(+id);
     }
+    updateStatus(id, body, req) {
+        if (id === req.user.userId) {
+            throw new common_1.BadRequestException('Cannot modify your own status');
+        }
+        return this.usersService.updateStatus(id, body.status);
+    }
 };
 exports.UsersController = UsersController;
 __decorate([
@@ -57,8 +63,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.AdminGuard),
+    __param(0, (0, common_1.Query)('status')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "findAll", null);
 __decorate([
@@ -103,6 +110,16 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Patch)(':id/status'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt'), roles_guard_1.AdminGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object, Object]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "updateStatus", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

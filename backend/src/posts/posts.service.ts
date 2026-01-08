@@ -99,13 +99,11 @@ export class PostsService {
         // Get friend IDs
         const friendIds = await this.friendsService.getFriendIds(userId);
 
-        // Also include user's own posts
-        const userIdsToInclude = [...friendIds, userId];
-
+        // Only get friends' posts (NOT including user's own posts)
         const posts = await this.prisma.post.findMany({
             where: {
                 userId: {
-                    in: userIdsToInclude,
+                    in: friendIds,  // Only friends, not the user
                 },
             },
             include: {

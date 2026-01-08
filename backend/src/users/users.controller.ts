@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query, ParseIntPipe, BadRequestException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -16,8 +16,8 @@ export class UsersController {
 
     @Get()
     @UseGuards(AuthGuard('jwt'), AdminGuard)
-    findAll() {
-        return this.usersService.findAll();
+    findAll(@Query('status') status?: string) {
+        return this.usersService.findAll(status as any);
     }
 
     @Get('profile')
@@ -48,5 +48,19 @@ export class UsersController {
     @UseGuards(AuthGuard('jwt'), AdminGuard)
     remove(@Param('id') id: string) {
         return this.usersService.remove(+id);
+    }
+
+    @Patch(':id/status')
+    @UseGuards(AuthGuard('jwt'), AdminGuard)
+    updateStatus(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: { status: 'ACTIVE' | 'SUSPENDED' | 'BANNED' },
+        @Request() req
+    ) {
+        // Prevent admin from modifying their own status
+        if (id === req.user.userId) {
+            throw new BadRequestException('Cannot modify your own status');
+        }
+        return this.usersService.updateStatus(id, body.status);
     }
 }

@@ -99,11 +99,10 @@ let PostsService = class PostsService {
     }
     async getFriendsPosts(userId) {
         const friendIds = await this.friendsService.getFriendIds(userId);
-        const userIdsToInclude = [...friendIds, userId];
         const posts = await this.prisma.post.findMany({
             where: {
                 userId: {
-                    in: userIdsToInclude,
+                    in: friendIds,
                 },
             },
             include: {
