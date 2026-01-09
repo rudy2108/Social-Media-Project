@@ -13,24 +13,25 @@ export declare class UsersService {
         age: number | null;
         role: import(".prisma/client").$Enums.Role;
         status: import(".prisma/client").$Enums.UserStatus;
+        suspendedUntil: Date | null;
         lastLoginAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
     findAll(status?: 'ACTIVE' | 'SUSPENDED' | 'BANNED'): Promise<{
-        id: number;
         email: string;
         name: string | null;
         address: string | null;
         age: number | null;
         role: import(".prisma/client").$Enums.Role;
         status: import(".prisma/client").$Enums.UserStatus;
+        suspendedUntil: Date | null;
         lastLoginAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }[]>;
     findOne(id: number): Promise<{
-        id: number;
         email: string;
         name: string | null;
         address: string | null;
@@ -38,9 +39,9 @@ export declare class UsersService {
         role: import(".prisma/client").$Enums.Role;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }>;
     update(id: number, updateUserDto: UpdateUserDto): Promise<{
-        id: number;
         email: string;
         name: string | null;
         address: string | null;
@@ -48,16 +49,18 @@ export declare class UsersService {
         role: import(".prisma/client").$Enums.Role;
         createdAt: Date;
         updatedAt: Date;
+        id: number;
     }>;
     remove(id: number): Promise<{
         message: string;
     }>;
     updateStatus(id: number, status: 'ACTIVE' | 'SUSPENDED' | 'BANNED'): Promise<{
-        id: number;
         email: string;
         name: string | null;
         role: import(".prisma/client").$Enums.Role;
         status: import(".prisma/client").$Enums.UserStatus;
+        suspendedUntil: Date | null;
+        id: number;
     }>;
     getActiveUsersCount(): Promise<number>;
 }

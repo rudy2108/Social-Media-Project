@@ -68,12 +68,39 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         console.log(`✅ User found: ${user.email} (ID: ${user.id}, Role: ${user.role}, Status: ${user.status})`);
+        if (user.status === 'BANNED') {
+            console.log(`🚫 User is BANNED: ${email}`);
+            throw new common_1.UnauthorizedException('Your ID got banned. Please contact the administrator.');
+        }
+        if (user.status === 'SUSPENDED') {
+            if (user.suspendedUntil && new Date() < user.suspendedUntil) {
+                const remainingHours = Math.ceil((user.suspendedUntil.getTime() - Date.now()) / (1000 * 60 * 60));
+                console.log(`⏸️ User is SUSPENDED until ${user.suspendedUntil}. Remaining: ${remainingHours} hours`);
+                throw new common_1.UnauthorizedException(`Your ID got suspended for 24 hours. Please try to login after 24 hours.`);
+            }
+            else {
+                console.log(`✅ Suspension expired for user: ${email}. Auto-releasing...`);
+                await this.prisma.user.update({
+                    where: { id: user.id },
+                    data: {
+                        status: 'ACTIVE',
+                        suspendedUntil: null,
+                    },
+                });
+                user.status = 'ACTIVE';
+                user.suspendedUntil = null;
+            }
+        }
         const isPasswordValid = await this.comparePasswords(password, user.password);
         if (!isPasswordValid) {
             console.log(`❌ Password validation failed for user: ${email}`);
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
         console.log(`✅ Password validation successful for user: ${email}`);
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() },
+        });
         const { password: _, ...result } = user;
         return result;
     }

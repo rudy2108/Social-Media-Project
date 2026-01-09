@@ -55,6 +55,7 @@ export class UsersService {
                 age: true,
                 role: true,
                 status: true,
+                suspendedUntil: true,
                 lastLoginAt: true,
                 createdAt: true,
                 updatedAt: true,
@@ -130,15 +131,29 @@ export class UsersService {
         // Check if user exists
         await this.findOne(id);
 
+        // Prepare update data based on status
+        let updateData: any = { status };
+
+        if (status === 'SUSPENDED') {
+            // Set suspension to expire in 24 hours
+            const suspendedUntil = new Date();
+            suspendedUntil.setHours(suspendedUntil.getHours() + 24);
+            updateData.suspendedUntil = suspendedUntil;
+        } else {
+            // Clear suspendedUntil for ACTIVE or BANNED status
+            updateData.suspendedUntil = null;
+        }
+
         const user = await this.prisma.user.update({
             where: { id },
-            data: { status },
+            data: updateData,
             select: {
                 id: true,
                 email: true,
                 name: true,
                 role: true,
                 status: true,
+                suspendedUntil: true,
             },
         });
 

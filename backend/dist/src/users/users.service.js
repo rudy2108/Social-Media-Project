@@ -56,6 +56,7 @@ let UsersService = class UsersService {
                 age: true,
                 role: true,
                 status: true,
+                suspendedUntil: true,
                 lastLoginAt: true,
                 createdAt: true,
                 updatedAt: true,
@@ -115,15 +116,25 @@ let UsersService = class UsersService {
     }
     async updateStatus(id, status) {
         await this.findOne(id);
+        let updateData = { status };
+        if (status === 'SUSPENDED') {
+            const suspendedUntil = new Date();
+            suspendedUntil.setHours(suspendedUntil.getHours() + 24);
+            updateData.suspendedUntil = suspendedUntil;
+        }
+        else {
+            updateData.suspendedUntil = null;
+        }
         const user = await this.prisma.user.update({
             where: { id },
-            data: { status },
+            data: updateData,
             select: {
                 id: true,
                 email: true,
                 name: true,
                 role: true,
                 status: true,
+                suspendedUntil: true,
             },
         });
         return user;
